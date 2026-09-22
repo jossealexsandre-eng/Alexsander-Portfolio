@@ -1,48 +1,12 @@
 import React from 'react';
-import { Instagram, MapPin, ExternalLink, Utensils, Calendar, Store, Sparkles, Camera, Users } from 'lucide-react';
+import { Instagram, MapPin, ExternalLink, Utensils, Calendar, Store } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SectionHeader } from './SectionHeader';
 import { MagneticButton } from './MagneticButton';
 import easteriaLogo from '../assets/easteria-logo.png';
 import easteriaKedai from '../assets/easteria-kedai.jpg';
 
-const STORY_STEPS = [
-  {
-    step: '01',
-    label: 'IDEA',
-    title: 'The Concept of "Nongs & Chill"',
-    desc: 'Conceived as a warm sanctuary in Biak, Papua, offering artisanal morning breakfast and brunch where conversation and comfort come first.',
-    icon: Sparkles,
-  },
-  {
-    step: '02',
-    label: 'IDENTITY',
-    title: 'Warm Smile & Organic Character',
-    desc: 'Crafted with a signature emerald-green smile and leaf motif, reflecting genuine island hospitality, freshness, and culinary care.',
-    icon: Store,
-  },
-  {
-    step: '03',
-    label: 'SPACE',
-    title: 'Atmospheric Biak Kedai',
-    desc: 'Indoor comfort paired with airy outdoor seating, welcoming remote workers, families, and morning travelers alike.',
-    icon: MapPin,
-  },
-  {
-    step: '04',
-    label: 'CONTENT',
-    title: 'Digital Marketing & Food Storytelling',
-    desc: 'Leading social media direction at @hello.easteria with daily reels, appetizing photography, and community engagement.',
-    icon: Camera,
-  },
-  {
-    step: '05',
-    label: 'EXPERIENCE',
-    title: 'Community & Lasting Moments',
-    desc: 'More than a cafe—a living gathering ground shaping contemporary food culture and youth connection in Biak.',
-    icon: Users,
-  },
-];
+
 
 export const EasteriaFeature: React.FC = () => {
   return (
@@ -227,52 +191,7 @@ export const EasteriaFeature: React.FC = () => {
           </div>
         </div>
 
-        {/* 19 — Vertical Storytelling Sequence: IDEA -> IDENTITY -> SPACE -> CONTENT -> EXPERIENCE */}
-        <div className="pt-12 border-t border-[#DDDDD8]">
-          <div className="max-w-2xl mb-12">
-            <span className="text-xs font-mono tracking-[0.25em] text-[#0F4C81] uppercase font-bold block mb-2">
-              THE STORY ARCHITECTURE
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-bold text-[#111111] uppercase tracking-tight">
-              A Five-Stage Visual Journey
-            </h3>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            {STORY_STEPS.map((s, idx) => {
-              const Icon = s.icon;
-              return (
-                <motion.div
-                  key={s.step}
-                  initial={{ opacity: 0, y: 25 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="p-5 border border-[#DDDDD8] bg-white/70 hover:bg-white hover:border-[#111111] transition-all duration-300 space-y-3 shadow-2xs group flex flex-col justify-between"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-[#0F4C81]">
-                        {s.step} // {s.label}
-                      </span>
-                      <Icon className="w-4 h-4 text-[#6B6B6B] group-hover:text-[#0F4C81] transition-colors" />
-                    </div>
-                    <h4 className="text-sm font-bold text-[#111111] uppercase tracking-tight">
-                      {s.title}
-                    </h4>
-                    <p className="text-xs text-[#6B6B6B] leading-relaxed">
-                      {s.desc}
-                    </p>
-                  </div>
-                  <div className="pt-3 border-t border-[#DDDDD8]/60 flex items-center justify-between text-[10px] font-mono text-[#6B6B6B]">
-                    <span>Stage {idx + 1} of 5</span>
-                    <span className="text-[#0F4C81]">Active</span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </section>
   );
