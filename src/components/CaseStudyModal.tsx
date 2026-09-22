@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X, ArrowUpRight, CheckCircle2, Layers, Cpu, Compass, BookOpen, Instagram, MapPin, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Project } from '../types';
 
 interface CaseStudyModalProps {
@@ -31,24 +32,32 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
     };
   }, [project, onClose]);
 
-  if (!project) return null;
-
-  const caseStudy = project.caseStudy;
-  const currentIndex = allProjects.findIndex((p) => p.id === project.id);
+  const caseStudy = project?.caseStudy;
+  const currentIndex = project ? allProjects.findIndex((p) => p.id === project.id) : 0;
   const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
 
   return (
-    <div
-      id="case-study-modal-backdrop"
-      className="fixed inset-0 z-50 bg-[#111111]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 md:p-10 overflow-y-auto animate-fade-in"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        id="case-study-modal-content"
-        className="bg-[#F7F7F5] text-[#111111] w-full max-w-5xl max-h-[92vh] overflow-y-auto border border-[#DDDDD8] shadow-2xl relative flex flex-col my-auto"
-      >
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          id="case-study-modal-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-50 bg-[#111111]/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 md:p-10 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
+        >
+          <motion.div
+            id="case-study-modal-content"
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-[#F7F7F5] text-[#111111] w-full max-w-5xl max-h-[92vh] overflow-y-auto border border-[#DDDDD8] shadow-2xl relative flex flex-col my-auto"
+          >
         {/* Modal Top Header Bar */}
         <div className="sticky top-0 z-20 bg-[#F7F7F5]/95 backdrop-blur-xs px-6 md:px-10 py-5 border-b border-[#DDDDD8] flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -335,7 +344,10 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
             <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
   );
 };
+

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { EXPERIENCES } from '../data/portfolioData';
+import { SectionHeader } from './SectionHeader';
 import ukorSocial from '../assets/ukor-social.jpg';
 import ukorSpeech from '../assets/ukor-speech.jpg';
 import ukorEvent from '../assets/ukor-event.jpg';
@@ -72,6 +74,19 @@ const UKOR_MOMENTS = [
 
 export const Experience: React.FC = () => {
   const [activeUkorIndex, setActiveUkorIndex] = useState<number | null>(null);
+  const timelineContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-driven line draw
+  const { scrollYProgress } = useScroll({
+    target: timelineContainerRef,
+    offset: ['start 75%', 'end 70%'],
+  });
+
+  const lineHeight = useSpring(scrollYProgress, {
+    stiffness: 200,
+    damping: 25,
+    restDelta: 0.001,
+  });
 
   // Lightbox keyboard navigation
   useEffect(() => {
@@ -109,21 +124,33 @@ export const Experience: React.FC = () => {
     <section id="experience" className="py-24 md:py-36 bg-[#F7F7F5] border-b border-[#DDDDD8]">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
-        <div className="mb-16 md:mb-24 pb-8 border-b border-[#DDDDD8]">
-          <span className="text-xs font-mono tracking-[0.25em] text-[#6B6B6B] uppercase block mb-3">
-            04 — EXPERIENCE
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#111111] tracking-tight uppercase">
-            Experience
-          </h2>
-        </div>
+        <SectionHeader number="04" label="EXPERIENCE" title="Experience" />
 
-        {/* Refined Vertical Timeline */}
-        <div className="relative border-l border-[#DDDDD8] ml-2 md:ml-6 pl-6 md:pl-12 space-y-16 md:space-y-20">
-          {EXPERIENCES.map((exp) => (
-            <div key={exp.id} className="relative group">
+        {/* Refined Vertical Timeline with Scroll Draw Line */}
+        <div
+          ref={timelineContainerRef}
+          className="relative ml-2 md:ml-6 pl-6 md:pl-12 space-y-16 md:space-y-24"
+        >
+          {/* Static Track Line */}
+          <div className="absolute left-0 top-3 bottom-0 w-[1px] bg-[#DDDDD8]" />
+
+          {/* Dynamic Scroll-Drawn Navy Line */}
+          <motion.div
+            style={{ scaleY: lineHeight }}
+            className="absolute left-0 top-3 bottom-0 w-[1px] bg-[#0F4C81] origin-top will-change-transform"
+          />
+
+          {EXPERIENCES.map((exp, idx) => (
+            <motion.div
+              key={exp.id}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative group"
+            >
               {/* Timeline Indicator Dot */}
-              <div className="absolute -left-[31px] md:-left-[55px] top-1.5 w-3.5 h-3.5 bg-[#F7F7F5] border-2 border-[#111111] group-hover:border-[#0F4C81] group-hover:bg-[#0F4C81] transition-colors rounded-none" />
+              <div className="absolute -left-[31px] md:-left-[55px] top-1.5 w-3.5 h-3.5 bg-[#F7F7F5] border-2 border-[#111111] group-hover:border-[#0F4C81] group-hover:bg-[#0F4C81] transition-all duration-300 rounded-none shadow-2xs" />
 
               <div className="space-y-4">
                 {/* Meta details */}
@@ -141,7 +168,7 @@ export const Experience: React.FC = () => {
 
                 {/* Role and Organization */}
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight uppercase">
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight uppercase group-hover:text-[#0F4C81] transition-colors">
                     {exp.role}
                   </h3>
                   <h4 className="text-base sm:text-lg font-semibold text-[#0F4C81] mt-1">
@@ -158,13 +185,13 @@ export const Experience: React.FC = () => {
                 {exp.responsibilities && exp.responsibilities.length > 0 && (
                   <div className="pt-2">
                     <span className="text-xs font-mono text-[#111111] font-bold tracking-wider uppercase block mb-2">
-                      Key Responsibilities & Competencies:
+                      Key Responsibilities &amp; Competencies:
                     </span>
                     <div className="flex flex-wrap gap-2">
                       {exp.responsibilities.map((item, i) => (
                         <span
                           key={i}
-                          className="text-xs text-[#111111] bg-white/70 border border-[#DDDDD8] px-3 py-1 font-medium"
+                          className="text-xs text-[#111111] bg-white/70 border border-[#DDDDD8] px-3 py-1 font-medium hover:border-[#111111] transition-colors"
                         >
                           {item}
                         </span>
@@ -185,28 +212,29 @@ export const Experience: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Uniform 3x3 Photo Grid */}
+                    {/* Uniform 3x3 Photo Grid with Hover Zoom & Cursor */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                       {UKOR_MOMENTS.map((m, i) => (
                         <div
                           key={i}
                           onClick={() => setActiveUkorIndex(i)}
-                          className="relative overflow-hidden aspect-[4/3] bg-[#E8E8E4] border border-[#DDDDD8] group/photo cursor-pointer"
+                          data-cursor="VIEW"
+                          className="relative overflow-hidden aspect-[4/3] bg-[#E8E8E4] border border-[#DDDDD8] group/photo cursor-pointer shadow-2xs"
                         >
                           <img
                             src={m.src}
                             alt={m.label}
                             style={{ objectPosition: m.objectPosition || 'center center' }}
-                            className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                             loading="lazy"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                          <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 flex items-end justify-between">
+                          <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 flex items-end justify-between pointer-events-none">
                             <div>
                               <p className="text-[11px] font-mono text-white font-bold uppercase tracking-wider">{m.label}</p>
                               <p className="text-[9px] text-white/75 leading-tight mt-0.5">{m.caption}</p>
                             </div>
-                            <Maximize2 className="w-3.5 h-3.5 text-white/80 flex-shrink-0 ml-2 mb-0.5" />
+                            <Maximize2 className="w-3.5 h-3.5 text-white/80 shrink-0 ml-2 mb-0.5" />
                           </div>
                         </div>
                       ))}
@@ -214,7 +242,7 @@ export const Experience: React.FC = () => {
 
                     {/* Logo + Identity bar */}
                     <div className="flex items-center gap-4 pt-2 border-t border-[#DDDDD8]">
-                      <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-white border border-[#DDDDD8] p-1.5">
+                      <div className="w-14 h-14 shrink-0 flex items-center justify-center bg-white border border-[#DDDDD8] p-1.5 shadow-2xs">
                         <img
                           src={ukorLogo}
                           alt="UKOR Maranatha Logo"
@@ -233,8 +261,8 @@ export const Experience: React.FC = () => {
                 {/* E-TIFA: Official Platform Logo */}
                 {exp.id === 'fisheries-biak' && (
                   <div className="pt-4">
-                    <div className="inline-flex items-center gap-4 p-3 bg-white border border-[#DDDDD8] max-w-md shadow-xs">
-                      <div className="h-12 w-28 flex-shrink-0 flex items-center justify-center p-1 bg-white">
+                    <div className="inline-flex items-center gap-4 p-3 bg-white border border-[#DDDDD8] max-w-md shadow-2xs">
+                      <div className="h-12 w-28 shrink-0 flex items-center justify-center p-1 bg-white">
                         <img
                           src={etifaLogo}
                           alt="E-TIFA Logo"
@@ -243,101 +271,132 @@ export const Experience: React.FC = () => {
                       </div>
                       <div className="border-l border-[#DDDDD8] pl-3">
                         <p className="text-xs font-bold text-[#111111] uppercase tracking-wide">E-TIFA Platform</p>
-                        <p className="text-[11px] text-[#6B6B6B] font-mono">Electronic Tracking & Information Fisheries Application</p>
+                        <p className="text-[11px] text-[#6B6B6B] font-mono">Electronic Tracking &amp; Information Fisheries Application</p>
                         <p className="text-[10px] text-[#0F4C81] font-mono mt-0.5">Biak, Papua · 2022 — 2023</p>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Fullscreen UKOR Moments Lightbox Modal */}
-      {activeUkorIndex !== null && activePhoto && (
-        <div
-          id="ukor-photo-lightbox"
-          className="fixed inset-0 z-50 bg-[#111111]/95 flex flex-col justify-between p-4 sm:p-8 animate-fade-in text-white"
-        >
-          {/* Lightbox Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-white/10">
-            <div className="flex items-center space-x-4">
-              <span className="text-xs font-mono tracking-widest text-[#0F4C81] uppercase font-bold bg-white/10 px-2.5 py-1">
-                UKOR MARANATHA MOMENTS
-              </span>
-              <span className="text-xs font-mono text-white/60">
-                {activeUkorIndex + 1} / {UKOR_MOMENTS.length}
-              </span>
-            </div>
-
-            <button
-              id="ukor-lightbox-close-btn"
-              onClick={() => setActiveUkorIndex(null)}
-              className="p-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Close Lightbox"
+      {/* Fullscreen UKOR Moments Lightbox Modal with Cinematic AnimatePresence */}
+      <AnimatePresence>
+        {activeUkorIndex !== null && activePhoto && (
+          <motion.div
+            id="ukor-photo-lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-50 bg-[#111111]/95 backdrop-blur-sm flex flex-col justify-between p-4 sm:p-8 text-white select-none"
+            onClick={() => setActiveUkorIndex(null)}
+          >
+            {/* Lightbox Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-between pb-4 border-b border-white/10"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-xs font-mono tracking-widest text-[#0F4C81] uppercase font-bold bg-white/10 px-2.5 py-1">
+                  UKOR MARANATHA MOMENTS
+                </span>
+                <span className="text-xs font-mono text-white/60">
+                  {activeUkorIndex + 1} / {UKOR_MOMENTS.length}
+                </span>
+              </div>
 
-          {/* Lightbox Center Content */}
-          <div className="relative flex-1 flex items-center justify-center my-4 overflow-hidden">
-            {/* Previous Button */}
-            <button
-              id="ukor-lightbox-prev-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveUkorIndex(
-                  (activeUkorIndex - 1 + UKOR_MOMENTS.length) % UKOR_MOMENTS.length
-                );
-              }}
-              className="absolute left-2 sm:left-6 z-10 p-3 bg-black/50 hover:bg-black/80 text-white border border-white/20 transition-colors cursor-pointer"
-              aria-label="Previous photograph"
+              <button
+                id="ukor-lightbox-close-btn"
+                onClick={() => setActiveUkorIndex(null)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close Lightbox"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </motion.div>
+
+            {/* Lightbox Center Content */}
+            <div
+              className="relative flex-1 flex items-center justify-center my-4 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
+              {/* Previous Button */}
+              <button
+                id="ukor-lightbox-prev-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveUkorIndex(
+                    (activeUkorIndex - 1 + UKOR_MOMENTS.length) % UKOR_MOMENTS.length
+                  );
+                }}
+                className="absolute left-2 sm:left-6 z-10 p-3 bg-black/50 hover:bg-black/80 text-white border border-white/20 transition-colors cursor-pointer"
+                aria-label="Previous photograph"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
 
-            {/* Main Image */}
-            <div className="max-w-5xl max-h-[75vh] flex items-center justify-center">
-              <img
-                src={activePhoto.src}
-                alt={activePhoto.label}
-                className="max-h-[75vh] w-auto max-w-full object-contain border border-white/10 shadow-2xl"
-              />
+              {/* Main Image with Zoom Animation */}
+              <motion.div
+                key={activePhoto.src}
+                initial={{ opacity: 0, scale: 0.93 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="max-w-5xl max-h-[75vh] flex items-center justify-center p-2"
+              >
+                <img
+                  src={activePhoto.src}
+                  alt={activePhoto.label}
+                  className="max-h-[75vh] w-auto max-w-full object-contain border border-white/10 shadow-2xl"
+                />
+              </motion.div>
+
+              {/* Next Button */}
+              <button
+                id="ukor-lightbox-next-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveUkorIndex((activeUkorIndex + 1) % UKOR_MOMENTS.length);
+                }}
+                className="absolute right-2 sm:right-6 z-10 p-3 bg-black/50 hover:bg-black/80 text-white border border-white/20 transition-colors cursor-pointer"
+                aria-label="Next photograph"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
             </div>
 
-            {/* Next Button */}
-            <button
-              id="ukor-lightbox-next-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveUkorIndex((activeUkorIndex + 1) % UKOR_MOMENTS.length);
-              }}
-              className="absolute right-2 sm:right-6 z-10 p-3 bg-black/50 hover:bg-black/80 text-white border border-white/20 transition-colors cursor-pointer"
-              aria-label="Next photograph"
+            {/* Lightbox Caption Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+              onClick={(e) => e.stopPropagation()}
             >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
-
-          {/* Lightbox Caption Bar */}
-          <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-            <div>
-              <h4 className="text-base font-bold tracking-tight text-white mb-0.5">
-                {activePhoto.label}
-              </h4>
-              <p className="text-white/70 max-w-2xl leading-relaxed">
-                {activePhoto.caption}
-              </p>
-            </div>
-            <div className="text-[11px] font-mono text-white/50">
-              Unit Kegiatan Olahraga — Universitas Kristen Maranatha
-            </div>
-          </div>
-        </div>
-      )}
+              <div>
+                <h4 className="text-base font-bold tracking-tight text-white mb-0.5">
+                  {activePhoto.label}
+                </h4>
+                <p className="text-white/70 max-w-2xl leading-relaxed">
+                  {activePhoto.caption}
+                </p>
+              </div>
+              <div className="text-[11px] font-mono text-white/50">
+                Unit Kegiatan Olahraga — Universitas Kristen Maranatha
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

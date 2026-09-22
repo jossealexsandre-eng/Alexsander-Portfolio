@@ -1,32 +1,66 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { GraduationCap, MapPin, Download, FileText, ExternalLink } from 'lucide-react';
+import { motion } from 'motion/react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { SectionHeader } from './SectionHeader';
+import { MagneticButton } from './MagneticButton';
 import alexAboutPortrait from '../assets/alex-about-portrait.jpg';
 import cvThumbnail from '../assets/cv-alexsander-josse.jpg';
 
 export const AboutMe: React.FC = () => {
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const portraitRef = useRef<HTMLDivElement>(null);
+
+  // Subtle interactive portrait depth on desktop mouse movement (5-7px)
+  useEffect(() => {
+    const isDesktop = window.matchMedia('(pointer: fine)').matches;
+    if (!isDesktop) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!portraitRef.current) return;
+      const rect = portraitRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const distX = (e.clientX - centerX) / (window.innerWidth / 2);
+      const distY = (e.clientY - centerY) / (window.innerHeight / 2);
+
+      setMouseOffset({
+        x: Math.max(-6, Math.min(6, distX * 6)),
+        y: Math.max(-6, Math.min(6, distY * 6)),
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <section id="about" className="pt-16 md:pt-24 pb-10 md:pb-14 bg-[#F7F7F5] border-b border-[#DDDDD8]">
+    <section id="about" className="pt-16 md:pt-24 pb-16 md:pb-24 bg-[#F7F7F5] border-b border-[#DDDDD8]">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
-        <div className="mb-12 pb-6 border-b border-[#DDDDD8]">
-          <span className="text-xs font-mono tracking-[0.25em] text-[#6B6B6B] uppercase block mb-3">
-            02 — ABOUT
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#111111] tracking-tight uppercase">
-            A little about me.
-          </h2>
-        </div>
+        <SectionHeader number="02" label="ABOUT" title="A little about me." />
 
         {/* Two Column Layout: Portrait on Left, Narrative on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Portrait Photo & Geographic Roots */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="relative aspect-[3/4] overflow-hidden border border-[#DDDDD8] bg-[#E8E8E4] group shadow-sm">
+            <motion.div
+              ref={portraitRef}
+              style={{
+                x: mouseOffset.x,
+                y: mouseOffset.y,
+              }}
+              transition={{ type: 'spring', stiffness: 220, damping: 25 }}
+              initial={{ opacity: 0, scale: 1.05 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: '-60px' }}
+              className="relative aspect-[3/4] overflow-hidden border border-[#DDDDD8] bg-[#E8E8E4] group shadow-sm will-change-transform"
+              data-cursor="VIEW"
+            >
               <img
                 src={alexAboutPortrait}
                 alt="Alexsander Josse Sulistio"
-                className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-700 ease-out"
+                className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-700 ease-out"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 pointer-events-none" />
@@ -42,10 +76,16 @@ export const AboutMe: React.FC = () => {
                   {PERSONAL_INFO.origin} • {PERSONAL_INFO.location}
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Geographic Roots Card */}
-            <div className="p-5 border border-[#DDDDD8] bg-white/60 space-y-2">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="p-5 border border-[#DDDDD8] bg-white/60 space-y-2 hover:border-[#111111] transition-colors"
+            >
               <div className="flex items-center space-x-2 text-xs font-mono text-[#0F4C81] uppercase font-bold">
                 <MapPin className="w-3.5 h-3.5" />
                 <span>Geographic Roots</span>
@@ -53,10 +93,16 @@ export const AboutMe: React.FC = () => {
               <p className="text-xs text-[#6B6B6B] leading-relaxed">
                 Biak, Papua represents cultural roots, raw ocean horizons, and coastal community vitality. Bandung, Indonesia serves as the creative and academic epicenter for Informatics Engineering and digital collaboration.
               </p>
-            </div>
+            </motion.div>
 
             {/* Curriculum Vitae Card */}
-            <div className="p-5 border border-[#DDDDD8] bg-white/80 space-y-3 shadow-xs">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="p-5 border border-[#DDDDD8] bg-white/80 space-y-3 shadow-xs"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-xs font-mono text-[#0F4C81] uppercase font-bold">
                   <FileText className="w-3.5 h-3.5" />
@@ -86,15 +132,19 @@ export const AboutMe: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2 pt-1">
-                <a
+                <MagneticButton
                   id="about-download-cv-btn"
                   href="/CV_Alexsander_Josse_Sulistio.pdf"
                   download="CV_Alexsander_Josse_Sulistio.pdf"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#111111] hover:bg-[#0F4C81] text-white text-xs font-mono tracking-wider uppercase transition-colors"
+                  data-cursor="DOWNLOAD"
+                  className="flex-1 block"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download CV</span>
-                </a>
+                  <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#111111] hover:bg-[#0F4C81] text-white text-xs font-mono tracking-wider uppercase transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download CV</span>
+                  </div>
+                </MagneticButton>
+
                 <a
                   href="/CV_Alexsander_Josse_Sulistio.pdf"
                   target="_blank"
@@ -105,13 +155,19 @@ export const AboutMe: React.FC = () => {
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Right Column: Education & Narrative Story */}
+          {/* Right Column: Education & Narrative Story with Staggered Entrance */}
           <div className="lg:col-span-7 space-y-8 text-base sm:text-lg text-[#6B6B6B] leading-relaxed">
             {/* 08 — EDUCATION Component */}
-            <div className="space-y-3 pb-6 border-b border-[#DDDDD8]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-3 pb-6 border-b border-[#DDDDD8]"
+            >
               <div className="flex items-center space-x-2 text-xs font-mono tracking-widest text-[#0F4C81] uppercase font-bold">
                 <GraduationCap className="w-4 h-4" />
                 <span>08 — EDUCATION</span>
@@ -133,31 +189,63 @@ export const AboutMe: React.FC = () => {
                   PRESENT
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <p className="text-xl sm:text-2xl text-[#111111] font-medium leading-relaxed">
+            {/* Narrative Paragraphs */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-xl sm:text-2xl text-[#111111] font-medium leading-relaxed"
+            >
               Hi, I'm <strong className="font-bold text-[#111111]">Alexsander Josse</strong>, an Informatics Engineering student at Maranatha Christian University, currently based in Bandung, Indonesia.
-            </p>
+            </motion.p>
 
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
               Originally from Biak, Papua, I have always been interested in combining technology with creativity.
-            </p>
+            </motion.p>
 
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               My background in Informatics Engineering has given me experience in web development, digital systems, databases, and software development.
-            </p>
+            </motion.p>
 
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+            >
               At the same time, my passion for photography and videography has led me to explore visual storytelling, event documentation, sports media, nature, portraits, and creative content.
-            </p>
+            </motion.p>
 
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
               I enjoy working across different disciplines because I believe technology and creativity can complement each other.
-            </p>
+            </motion.p>
 
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+            >
               Whether I am building a website, capturing a moment, creating content, or leading a team, I enjoy turning ideas into something real.
-            </p>
+            </motion.p>
           </div>
         </div>
       </div>

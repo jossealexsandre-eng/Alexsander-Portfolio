@@ -1,7 +1,10 @@
 import React from 'react';
 import { ArrowUpRight, Instagram, MapPin } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Project } from '../types';
 import { PROJECTS } from '../data/portfolioData';
+import { SectionHeader } from './SectionHeader';
+import { MagneticButton } from './MagneticButton';
 
 interface SelectedWorkProps {
   onOpenCaseStudy: (project: Project) => void;
@@ -12,19 +15,13 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
     <section id="work" className="py-24 md:py-36 bg-[#F7F7F5] border-b border-[#DDDDD8]">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 pb-8 border-b border-[#DDDDD8]">
-          <div>
-            <span className="text-xs font-mono tracking-[0.25em] text-[#6B6B6B] uppercase block mb-3">
-              06 — SELECTED WORK
-            </span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#111111] tracking-tight uppercase">
-              Selected Work
-            </h2>
-          </div>
-          <p className="mt-4 md:mt-0 text-sm md:text-base text-[#6B6B6B] max-w-md">
-            A collection of digital projects, creative work, and ideas built across technology and visual storytelling.
-          </p>
-        </div>
+        <SectionHeader
+          number="06"
+          label="SELECTED WORK"
+          title="Selected Work"
+          description="A collection of digital projects, creative work, and ideas built across technology and visual storytelling."
+          align="between"
+        />
 
         {/* Editorial Projects Grid */}
         <div className="space-y-16 md:space-y-24">
@@ -34,17 +31,22 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
               <article
                 key={project.id}
                 id={`project-${project.id}`}
-                className="group border border-[#DDDDD8] bg-white/40 hover:bg-white transition-all duration-500 overflow-hidden"
+                className="group border border-[#DDDDD8] bg-white/40 hover:bg-white transition-all duration-500 overflow-hidden shadow-xs hover:shadow-md"
               >
                 <div
                   className={`flex flex-col ${
                     isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
                   } items-stretch w-full`}
                 >
-                  {/* Visual Image Column */}
-                  <div
+                  {/* Visual Image Column with Curtain Clip-Path Reveal */}
+                  <motion.div
+                    initial={{ clipPath: 'inset(0 100% 0 0)', opacity: 0 }}
+                    whileInView={{ clipPath: 'inset(0 0% 0 0)', opacity: 1 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full lg:w-7/12 shrink-0 relative overflow-hidden bg-[#0F141C] flex items-center justify-center min-h-[300px] sm:min-h-[380px] lg:min-h-[460px] cursor-pointer group/img"
                     onClick={() => onOpenCaseStudy(project)}
+                    data-cursor="OPEN ↗"
                   >
                     <img
                       src={project.imageUrl}
@@ -53,21 +55,21 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
                         project.id === 'e-tifa'
                           ? 'object-contain p-4 sm:p-6 md:p-8 drop-shadow-2xl'
                           : 'object-cover'
-                      } group-hover:scale-103 transition-transform duration-700 ease-out`}
+                      } group-hover/img:scale-104 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]`}
                       loading="lazy"
                       referrerPolicy="no-referrer"
                     />
 
-                    {/* Gradient & Overlay */}
-                    <div className="absolute inset-0 bg-[#111111]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    {/* Gradient & Overlay with 400-600ms transition */}
+                    <div className="absolute inset-0 bg-[#111111]/25 opacity-0 group-hover/img:opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] pointer-events-none" />
 
                     {/* Corner Tag */}
-                    <div className="absolute top-4 left-4 bg-[#111111] text-white px-3 py-1 text-xs font-mono tracking-widest uppercase z-10">
+                    <div className="absolute top-4 left-4 bg-[#111111] text-white px-3 py-1 text-xs font-mono tracking-widest uppercase z-10 shadow-xs">
                       NO. {project.number}
                     </div>
 
                     {project.statusBadge && (
-                      <div className="absolute top-4 right-4 bg-[#0F4C81] text-white px-3 py-1 text-[11px] font-mono tracking-wider uppercase z-10">
+                      <div className="absolute top-4 right-4 bg-[#0F4C81] text-white px-3 py-1 text-[11px] font-mono tracking-wider uppercase z-10 shadow-xs">
                         {project.statusBadge}
                       </div>
                     )}
@@ -77,7 +79,7 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
                         {project.location}
                       </div>
                     )}
-                  </div>
+                  </motion.div>
 
                   {/* Editorial Text Column */}
                   <div
@@ -97,6 +99,7 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
 
                       <h3
                         onClick={() => onOpenCaseStudy(project)}
+                        data-cursor="OPEN ↗"
                         className="text-2xl sm:text-3xl font-extrabold text-[#111111] uppercase tracking-tight group-hover:text-[#0F4C81] transition-colors cursor-pointer"
                       >
                         {project.title}
@@ -129,18 +132,20 @@ export const SelectedWork: React.FC<SelectedWorkProps> = ({ onOpenCaseStudy }) =
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Action Button with Magnetic Hover & Micro-interaction */}
                     <div className="pt-8 mt-6 border-t border-[#DDDDD8] flex flex-wrap items-center justify-between gap-4">
-                      <button
+                      <MagneticButton
                         id={`btn-open-case-${project.id}`}
                         onClick={() => onOpenCaseStudy(project)}
-                        className="inline-flex items-center space-x-2 text-xs font-bold tracking-[0.2em] text-[#111111] group-hover:text-[#0F4C81] transition-colors"
+                        data-cursor="OPEN ↗"
                       >
-                        <span>
-                          {project.isInDevelopment ? 'VIEW PROJECT' : 'VIEW CASE STUDY'}
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </button>
+                        <div className="inline-flex items-center space-x-2 text-xs font-bold tracking-[0.2em] text-[#111111] hover:text-[#0F4C81] transition-colors py-1 group/btn">
+                          <span className="transform group-hover/btn:translate-x-0.5 transition-transform">
+                            {project.isInDevelopment ? 'VIEW PROJECT' : 'VIEW CASE STUDY'}
+                          </span>
+                          <ArrowUpRight className="w-4 h-4 transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                        </div>
+                      </MagneticButton>
 
                       {/* Quick external links */}
                       {(project.instagramUrl || project.mapsUrl) && (

@@ -14,6 +14,9 @@ import { EasteriaFeature } from './components/EasteriaFeature';
 import { PersonalSection } from './components/PersonalSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
+import { PageLoader } from './components/PageLoader';
+import { CustomCursor } from './components/CustomCursor';
+import { ScrollProgress } from './components/ScrollProgress';
 import { Project } from './types';
 import { PROJECTS } from './data/portfolioData';
 
@@ -29,48 +32,57 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111111] selection:bg-[#0F4C81] selection:text-white">
-      {/* Sticky Editorial Navigation */}
+      {/* ─── Global: Cinematic Page Loader (first visit only) ─── */}
+      <PageLoader />
+
+      {/* ─── Global: Custom Cursor (desktop pointer only) ─── */}
+      <CustomCursor />
+
+      {/* ─── Global: Scroll Progress Bar ─── */}
+      <ScrollProgress />
+
+      {/* ─── Sticky Editorial Navigation ─── */}
       <Navbar onContactClick={scrollToContact} />
 
       <main>
-        {/* Hero Section (07) */}
+        {/* Hero Section */}
         <Hero onContactClick={scrollToContact} />
 
-        {/* 01 — Introduction (08) */}
+        {/* 01 — Introduction */}
         <Introduction />
 
         {/* 02 — About Me & Education */}
         <AboutMe />
 
-        {/* 03 — Creative Portfolio: Through My Lens (14, 15) */}
+        {/* 03 — Creative Portfolio: Through My Lens */}
         <CreativeGallery />
 
-        {/* Sports / Visual Media: PS. Victor Waang (16) */}
+        {/* Sports / Visual Media: PS. Victor Waang */}
         <SportsCreative />
 
-        {/* 04 — Experience (17) */}
+        {/* 04 — Experience */}
         <Experience />
 
-        {/* 05 — Achievement (18) */}
+        {/* 05 — Achievement */}
         <Achievement />
 
         {/* 06 — Selected Work */}
         <SelectedWork onOpenCaseStudy={(proj) => setSelectedProject(proj)} />
 
-        {/* 07 — Capabilities & Toolbox (20, 21) */}
+        {/* 07 — Capabilities & Toolbox */}
         <Capabilities />
 
-        {/* From Idea to Reality — Building Easteria (23) */}
+        {/* From Idea to Reality — Building Easteria */}
         <EasteriaFeature />
 
-        {/* Beyond Work & Currently (24, 25) */}
+        {/* Beyond Work & Currently */}
         <PersonalSection />
 
-        {/* Contact & Socials (26, 27) */}
+        {/* Contact & Socials */}
         <ContactSection onOpenMessageModal={scrollToContact} />
       </main>
 
-      {/* Footer (28) */}
+      {/* Footer */}
       <Footer />
 
       {/* Case Study Detail Modal Overlay */}

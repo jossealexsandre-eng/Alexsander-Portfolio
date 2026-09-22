@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { MagneticButton } from './MagneticButton';
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -36,7 +37,8 @@ export const Footer: React.FC = () => {
                   href={PERSONAL_INFO.socials.personalInstagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-[#0F4C81] transition-colors"
+                  data-cursor="OPEN ↗"
+                  className="text-white hover:text-[#0F4C81] transition-colors inline-block w-fit"
                 >
                   Instagram — @bangpenom ↗
                 </a>
@@ -44,7 +46,8 @@ export const Footer: React.FC = () => {
                   href={PERSONAL_INFO.socials.photographyInstagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-[#0F4C81] transition-colors"
+                  data-cursor="OPEN ↗"
+                  className="text-white hover:text-[#0F4C81] transition-colors inline-block w-fit"
                 >
                   Photography — @alxv.films ↗
                 </a>
@@ -52,21 +55,23 @@ export const Footer: React.FC = () => {
                   href={PERSONAL_INFO.socials.linkedin.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-[#0F4C81] transition-colors"
+                  data-cursor="OPEN ↗"
+                  className="text-white hover:text-[#0F4C81] transition-colors inline-block w-fit"
                 >
                   LinkedIn — Alexsander Josse ↗
                 </a>
               </div>
             </div>
 
-            <button
+            <MagneticButton
               onClick={scrollToTop}
-              className="inline-flex items-center space-x-2 text-xs font-mono text-[#999999] hover:text-white border border-[#333333] px-4 py-2.5 transition-colors self-start sm:self-auto"
-              aria-label="Scroll to top"
+              className="self-start sm:self-auto"
             >
-              <span>BACK TO TOP</span>
-              <ArrowUp className="w-3.5 h-3.5" />
-            </button>
+              <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#999999] hover:text-white border border-[#333333] hover:border-white/50 px-4 py-2.5 transition-colors cursor-pointer group">
+                <span>BACK TO TOP</span>
+                <ArrowUp className="w-3.5 h-3.5 transform group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+            </MagneticButton>
           </div>
         </div>
 
